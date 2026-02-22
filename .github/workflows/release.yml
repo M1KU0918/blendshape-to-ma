@@ -1,0 +1,34 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Read package version
+        id: version
+        run: |
+          VERSION=$(cat Packages/com.m1ku0918.blendshape-to-ma/package.json | python3 -c "import sys,json; print(json.load(sys.stdin)['version'])")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tagName=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create zip
+        run: |
+          cd Packages
+          zip -r ../com.m1ku0918.blendshape-to-ma-${{ steps.version.outputs.version }}.zip com.m1ku0918.blendshape-to-ma
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.tagName }}
+          files: |
+            com.m1ku0918.blendshape-to-ma-${{ steps.version.outputs.version }}.zip
+            Packages/com.m1ku0918.blendshape-to-ma/package.json
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
