@@ -2,20 +2,75 @@ name: Build Repo Listing
 
 on:
   workflow_dispatch:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+    paths:
+      - source.json
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Build VPM Listing
-        uses: vrchat-community/package-list-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Listing
+        id: build
+        run: |
+          curl -sL https://github.com/vrchat-community/package-list-action/releases/latest/download/package-list-action.zip -o action.zip
+          unzip -q action.zip -d package-list-action
+          cd package-list-action
+          dotnet PackageListAction.dll ../ ../Website
+        continue-on-error: true
+
+      - name: Generate index.json manually
+        if: steps.build.outcome == 'failure' || steps.build.outcome == 'success'
+        run: |
+          python3 - <<'EOF'
+          import json, urllib.request, os
+
+          with open("source.json") as f:
+            source = json.load(f)
+
+          packages = {}
+
+          for repo in source.get("githubRepos", []):
+            url = f"https://api.github.com/repos/{repo}/releases"
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            try:
+              with urllib.request.urlopen(req) as r:
+                releases = json.loads(r.read())
+              for release in releases:
+                for asset in release.get("assets", []):
+                  if asset["name"] == "package.json":
+                    pkg_req = urllib.request.Request(asset["browser_download_url"], headers={"User-Agent": "Mozilla/5.0"})
+                    with urllib.request.urlopen(pkg_req) as r:
+                      pkg = json.loads(r.read())
+                    name = pkg["name"]
+                    if name not in packages:
+                      packages[name] = {"versions": {}}
+                    packages[name]["versions"][pkg["version"]] = pkg
+            except Exception as e:
+              print(f"Error fetching {repo}: {e}")
+
+          output = {
+            "name": source["name"],
+            "id": source["id"],
+            "url": source["url"],
+            "author": source.get("author", ""),
+            "packages": packages
+          }
+
+          os.makedirs("Website", exist_ok=True)
+          with open("Website/index.json", "w") as f:
+            json.dump(output, f, indent=2)
+          print("Done! Packages:", list(packages.keys()))
+          EOF
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
