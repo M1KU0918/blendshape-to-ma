@@ -1,0 +1,11 @@
+{
+  "name": "M1KU0918's VPM Repo",
+  "id": "com.m1ku0918.vpm",
+  "url": "https://M1KU0918.github.io/blendshape-to-ma/index.json",
+  "author": "M1KU0918",
+  "description": "VPM repository for BlendShape to MA ShapeChanger and other tools.",
+  "githubRepos": [
+    "M1KU0918/blendshape-to-ma"
+  ],
+  "packages": []
+}

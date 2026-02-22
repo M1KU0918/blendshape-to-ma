@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlendShape to MA ShapeChanger</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: 60px auto; padding: 0 20px; color: #222; }
+    h1 { font-size: 1.8rem; }
+    .btn {
+      display: inline-block; margin-top: 24px; padding: 14px 28px;
+      background: #5865F2; color: #fff; border-radius: 8px;
+      text-decoration: none; font-weight: bold; font-size: 1rem;
+    }
+    .btn:hover { background: #4752c4; }
+    code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9rem; }
+    pre { background: #f0f0f0; padding: 14px; border-radius: 6px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>BlendShape to MA ShapeChanger</h1>
+  <p>
+    SkinnedMeshRenderer の BlendShape 値を Modular Avatar Shape Changer に
+    ワンクリックで一括登録できる Unity エディター拡張ツールです。
+  </p>
+
+  <h2>VCC でインストール</h2>
+  <p>下のボタンをクリックすると VRChat Creator Companion にリポジトリが追加されます。</p>
+
+  <a class="btn" href="vcc://vpm/addRepo?url=https://M1KU0918.github.io/blendshape-to-ma/index.json">
+    Add to VCC
+  </a>
+
+  <h2>手動でリポジトリを追加する場合</h2>
+  <p>VCC の Settings → Packages → Add Repository に以下のURLを貼り付けてください。</p>
+  <pre>https://M1KU0918.github.io/blendshape-to-ma/index.json</pre>
+
+  <h2>使い方</h2>
+  <ol>
+    <li>Unity メニューの <code>Tools &gt; BlendShape to MA ShapeChanger</code> を開く</li>
+    <li>Skinned Mesh Renderer と MA Shape Changer をセット</li>
+    <li>「MA Shape Changer に登録」ボタンを押すだけ</li>
+  </ol>
+
+  <h2>必要環境</h2>
+  <ul>
+    <li>Unity 2019.4 以上</li>
+    <li>Modular Avatar 1.9.0 以上</li>
+  </ul>
+</body>
+</html>
